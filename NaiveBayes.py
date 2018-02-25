@@ -120,3 +120,4 @@ for x in theDeltas:
     print(prN, prP)
 
 # endre så vi teller antall reviews som inneholder ordet, ikke antall forekomster av ordet
+# new comment line
