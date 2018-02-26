@@ -4,36 +4,45 @@ import numpy as np
 import jupyter
 import math
 
+# henter listen av filer
+
 
 def getTrainData(trainDataFolder):
     return os.listdir(trainDataFolder)
 
 
-neg = "C:\\Users\\Espen\\INFO284\\Exam1\\aclImdb\\train\\neg\\"
-pos = "C:\\Users\\Espen\\INFO284\\Exam1\\aclImdb\\train\\pos\\"
+neg = "C:\\Users\\Espen\\INFO284\\Exam1\\Data\\train\\neg\\"
+pos = "C:\\Users\\Espen\\INFO284\\Exam1\\Data\\train\\pos\\"
 negativeData = getTrainData(neg)
 positiveData = getTrainData(pos)
 
 
 #%%
 
-
-def createArrayList(posDat, path):
+# tar en liste med filnavn og path til filene og lager en liste av numpy arrays
+# numpy arrayene inneholder hver enkelt ord i et review
+# prøver også å slette alle puktum, ikke så farlig, take it or leave it
+def createArrayList(data, path):
     theList = []
-    for flie in posDat:
+    for flie in data:
         with open(path+flie, encoding='utf8') as f:
             text = f.readlines()
             wordsarray = np.genfromtxt(
-                text, case_sensitive="lower", deletechars='.,!?()', dtype=str)
+                text, case_sensitive="lower", deletechars='.', dtype=str)
 
             theList.append(wordsarray)
     return theList
 
 
+# lager en liste av de positive og en av de negative
 posList = createArrayList(positiveData, pos)
 negList = createArrayList(negativeData, neg)
 
 #%%
+
+# tar inn en liste av words arrays og returnerer en dictionary som inneholder
+# hvert ord som finnes i noe array i den listen som keys. Disse har verdier
+# som tilsvarer antall reviews som inneholder det ordet
 
 
 def addWords(theList):
@@ -54,66 +63,3 @@ def addWords(theList):
 
 negWordsDict = addWords(negList)
 posWordsDict = addWords(posList)
-
-
-#%%
-
-
-def getDeltas(wordsDict1, wordsDict2):
-
-    deltas = {}
-
-    for x in wordsDict1:
-        if x in wordsDict2:
-            delta = math.fabs(wordsDict1[x] - wordsDict2[x])
-            if wordsDict2[x] < wordsDict2.__len__() / 3:
-                deltas[x] = delta
-        else:
-            delta = wordsDict1[x]
-            deltas[x] = delta
-
-    for y in wordsDict2:
-        if y in wordsDict1 and y not in deltas:
-            delta = math.fabs(wordsDict1[y] - wordsDict2[y])
-            if wordsDict1[y] < wordsDict1.__len__() / 3:
-                deltas[y] = delta
-        elif y not in deltas:
-            delta = wordsDict2[y]
-            deltas[y] = delta
-
-    return deltas
-
-
-theDeltas = getDeltas(negWordsDict, posWordsDict)
-
-#%%
-median = 1
-
-
-def halveDict(myDic, median):
-    newDict = {}
-    deltaList = []
-    for delta in theDeltas:
-        if theDeltas[delta] > median:
-            newDict[delta] = theDeltas[delta]
-            deltaList.append(theDeltas[delta])
-
-    newMedian = np.median(deltaList)
-    return newDict, newMedian
-
-
-while (theDeltas.__len__() > 1000):
-    theDeltas, median = halveDict(theDeltas, median)
-
-#%%
-givenPosProbOfWord = {}
-givenNegProbOfWord = {}
-for x in theDeltas:
-    prN = (negWordsDict[x] / negWordsDict.__len__())
-    givenNegProbOfWord[x] = prN
-    prP = (posWordsDict[x] / posWordsDict.__len__())
-    givenPosProbOfWord[x] = prN
-    print(prN, prP)
-
-#%%
-print(givenNegProbOfWord)
