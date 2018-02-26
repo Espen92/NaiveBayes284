@@ -31,9 +31,6 @@ def createArrayList(posDat, path):
 
 
 posList = createArrayList(positiveData, pos)
-
-
-#%%
 negList = createArrayList(negativeData, neg)
 
 #%%
@@ -42,13 +39,16 @@ negList = createArrayList(negativeData, neg)
 def addWords(theList):
     dic = {}
     for each in theList:
+        tempDic = {}
         if (each.shape == ()):
             each = np.array([""])
         for every in each:
-            if every in dic:
-                dic[every] += 1
-            else:
-                dic[every] = 1
+            if every not in tempDic:
+                tempDic[every] = True
+                if every in dic:
+                    dic[every] += 1
+                else:
+                    dic[every] = 1
     return dic
 
 
@@ -87,9 +87,6 @@ def getDeltas(wordsDict1, wordsDict2):
 theDeltas = getDeltas(negWordsDict, posWordsDict)
 
 #%%
-print(posWordsDict.__len__())
-print(negWordsDict.__len__())
-print(theDeltas.__len__())
 median = 1
 
 
@@ -102,7 +99,6 @@ def halveDict(myDic, median):
             deltaList.append(theDeltas[delta])
 
     newMedian = np.median(deltaList)
-    print(median)
     return newDict, newMedian
 
 
@@ -119,5 +115,5 @@ for x in theDeltas:
     givenPosProbOfWord[x] = prN
     print(prN, prP)
 
-# endre så vi teller antall reviews som inneholder ordet, ikke antall forekomster av ordet
-# new comment line
+#%%
+print(givenNegProbOfWord)
