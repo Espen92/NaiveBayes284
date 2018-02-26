@@ -11,8 +11,8 @@ def getTrainData(trainDataFolder):
     return os.listdir(trainDataFolder)
 
 
-neg = "C:\\Users\\Espen\\INFO284\\Exam1\\Data\\train\\neg\\"
-pos = "C:\\Users\\Espen\\INFO284\\Exam1\\Data\\train\\pos\\"
+neg = "..\\Data\\train\\neg\\"
+pos = "..\\Data\\train\\pos\\"
 negativeData = getTrainData(neg)
 positiveData = getTrainData(pos)
 
@@ -63,3 +63,9 @@ def addWords(theList):
 
 negWordsDict = addWords(negList)
 posWordsDict = addWords(posList)
+
+#%%
+# calculating probabilities
+
+print(negWordsDict["horrible"]/negList.__len__())
+print(posWordsDict["horrible"]/posList.__len__())
