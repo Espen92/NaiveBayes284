@@ -3,6 +3,7 @@ import os
 import numpy as np
 import jupyter
 import math
+from collections import Counter
 
 # henter listen av filer
 
@@ -65,7 +66,60 @@ negWordsDict = addWords(negList)
 posWordsDict = addWords(posList)
 
 #%%
-# calculating probabilities
+# joins the dictionaries to create one with all registered words
+allWords = Counter(negWordsDict) + Counter(posWordsDict)
 
-print(negWordsDict["horrible"]/negList.__len__())
-print(posWordsDict["horrible"]/posList.__len__())
+# return the probability of a review boing of a given type, wordsDict is posWordsDict or negWordsDict
+# theList is posList or negList
+
+
+def prob(review, wordsDict, theList):
+
+    currentP = 0.5  # start with the probability of a review being good or bad, here that is 50/50
+    # if there is a new word in this review, add it to allWords with 0 occurances
+    for word in review:
+        if word not in allWords:
+            allWords[word] = 0
+
+    for word in allWords:
+        # if the word is in any positive/negative review, get the likelyhood of that that word given that the review is pos/neg and
+        # multiply it by the current probability
+        # this way we get P(w[i]|y)*P(w[... i ... ]|y)
+        if word in wordsDict:
+            # first check if the word is in the wordDict, if it isn't that means
+            # the probability of that word, given that y is 0
+            if word in review:
+                # if the word IS in the review, that attribute is True, so we take the prob of it
+                currentP = currentP * (wordsDict[word]/theList.__len__())
+            else:
+                # if it isn't in the review, it is False, so we take the inverse of the P (1-p)
+                currentP = currentP * (1-(wordsDict[word]/theList.__len__()))
+        # otherwise the P(w[i]|y=1) is 0, we will revisit this so it'sæ not actually 0
+        else:
+            if word in review:
+                currentP = currentP * 0
+            else:
+                currentP = currentP * (1-0)
+
+    return currentP
+
+
+# this is where we get the actual probabilities.
+def probOfPositive(review):
+    return prob(review, posWordsDict, posList) / (prob(review, posWordsDict,
+                                                       posList) + prob(review, negWordsDict, negList))
+
+
+def probOfNegative(review):
+    return prob(review, negWordsDict, negList) / (prob(review, posWordsDict,
+                                                       posList) + prob(review, negWordsDict, negList))
+
+
+#%%
+# test
+myTestReview = ["very", "good", "horrible"]
+probOfBad = probOfNegative(myTestReview)
+probOfGood = probOfPositive(myTestReview)
+
+print("Probability of review being good: ", probOfGood, "\n", "Probability of review being bad: ",
+      probOfBad, "\n" "sum of probabilities: ", (probOfBad+probOfGood))
