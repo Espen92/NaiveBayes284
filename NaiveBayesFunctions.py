@@ -12,7 +12,6 @@ def getTrainData(trainDataFolder):
 
 # tar en liste med filnavn og path til filene og lager en liste av numpy arrays
 # numpy arrayene inneholder hver enkelt ord i et review
-# prøver også å slette alle puktum, ikke så farlig, take it or leave it
 
 
 def createArrayList(data, path):
@@ -21,7 +20,7 @@ def createArrayList(data, path):
         with open(path+flie, encoding='utf8') as f:
             text = f.readlines()
             wordsarray = np.genfromtxt(
-                text, case_sensitive="lower", deletechars='.', dtype=str)
+                text, case_sensitive="lower", dtype=str)
 
             theList.append(wordsarray)
     return theList
