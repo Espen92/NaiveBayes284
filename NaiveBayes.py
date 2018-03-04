@@ -3,6 +3,7 @@
 #%%
 import jupyter
 import NaiveBayesFunctions as nb
+from collections import Counter
 
 
 neg = "..\\Data\\train\\neg\\"
@@ -15,22 +16,20 @@ positiveData = nb.getTrainData(pos)
 posList = nb.createArrayList(positiveData, pos)
 negList = nb.createArrayList(negativeData, neg)
 
-#%%
 # lager dictionaries med antall reviews disse ordene forekommer i (ut av de positive/negative)
 negWordsDict = nb.addWords(negList)
 posWordsDict = nb.addWords(posList)
+allWords = Counter(negWordsDict) + Counter(posWordsDict)
 
 
 #%%
 # test
 myTestReview = ["I", "liked", "it", "okay",
                 "but", "I", "have", "seen", "better"]
-probOfBad = nb.probOfY(myTestReview, negWordsDict,
-                       negList, posWordsDict, posList)
-probOfGood = nb.probOfY(myTestReview, posWordsDict,
-                        posList, negWordsDict, negList)
 
+probOfGood = nb.probOfPositive(
+    myTestReview, posWordsDict, posList, negList, negWordsDict, allWords)
+probOfBad = nb.probOfNegative(
+    myTestReview, posWordsDict, posList, negList, negWordsDict, allWords)
 print("Probability of review being good: ", probOfGood, "\n", "Probability of review being bad: ",
       probOfBad, "\n" "sum of probabilities: ", (probOfBad+probOfGood))
-
-#%%

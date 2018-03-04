@@ -1,8 +1,9 @@
+#%%
 import os
 import numpy as np
+import jupyter
 import math
 from collections import Counter
-
 
 # henter listen av filer
 
@@ -10,25 +11,40 @@ from collections import Counter
 def getTrainData(trainDataFolder):
     return os.listdir(trainDataFolder)
 
+
+neg = "..\\Data\\train\\neg\\"
+pos = "..\\Data\\train\\pos\\"
+negativeData = getTrainData(neg)
+positiveData = getTrainData(pos)
+
+
+#%%
+
 # tar en liste med filnavn og path til filene og lager en liste av numpy arrays
 # numpy arrayene inneholder hver enkelt ord i et review
-
-
+# prøver også å slette alle puktum, ikke så farlig, take it or leave it
 def createArrayList(data, path):
     theList = []
-    for file_ in data:
-        with open(path+file_, encoding='utf8') as f:
+    for flie in data:
+        with open(path+flie, encoding='utf8') as f:
             text = f.readlines()
             wordsarray = np.genfromtxt(
-                text, case_sensitive="lower", dtype=str)
+                text, dtype=str)
 
             theList.append(wordsarray)
     return theList
 
 
+# lager en liste av de positive og en av de negative
+posList = createArrayList(positiveData, pos)
+negList = createArrayList(negativeData, neg)
+
+#%%
+
 # tar inn en liste av words arrays og returnerer en dictionary som inneholder
 # hvert ord som finnes i noe array i den listen som keys. Disse har verdier
 # som tilsvarer antall reviews som inneholder det ordet
+
 
 def addWords(theList):
     dic = Counter()
@@ -45,12 +61,20 @@ def addWords(theList):
                     dic[everyWord] = 1
     return dic
 
+
+negWordsDict = addWords(negList)
+posWordsDict = addWords(posList)
+
+
+#%%
+# joins the dictionaries to create one with all registered words
+allWordsP = negWordsDict + posWordsDict
+
 # return the probability of a review boing of a given type, wordsDict is posWordsDict or negWordsDict
 # theList is posList or negList
 
 
 def prob(review, wordsDict, theList, allWords):
-
     currentP = 0.5  # start with the probability of a review being good or bad, here that is 50/50
     # if there is a new word in this review, add it to allWords with 0 occurances
     for word in review:
@@ -76,15 +100,27 @@ def prob(review, wordsDict, theList, allWords):
                 currentP = currentP * 0
             else:
                 currentP = currentP * (1-0)
-    print(currentP)
+
     return currentP
 
 
-def probOfPositive(review, posWordsDict, posList, negList, negWordsDict, allWords):
-    return prob(review, posWordsDict, posList, allWords)/(prob(review, negWordsDict, negList, allWords) +
-                                                          prob(review, posWordsDict, posList, allWords))
+# this is where we get the actual probabilities.
+def probOfPositive(review):
+    return prob(review, posWordsDict, posList, allWordsP) / (prob(review, posWordsDict,
+                                                                  posList, allWordsP) + prob(review, negWordsDict, negList, allWordsP))
 
 
-def probOfNegative(review, posWordsDict, posList, negList, negWordsDict, allWords):
-    return prob(review, negWordsDict, negList, allWords)/(prob(review, negWordsDict, negList, allWords) +
-                                                          prob(review, posWordsDict, posList, allWords))
+def probOfNegative(review):
+    return prob(review, negWordsDict, negList, allWordsP) / (prob(review, posWordsDict,
+                                                                  posList, allWordsP) + prob(review, negWordsDict, negList, allWordsP))
+
+
+#%%
+# test
+myTestReview = ["I", "liked", "it", "okay",
+                "but", "I", "have", "seen", "better"]
+probOfBad = probOfNegative(myTestReview)
+probOfGood = probOfPositive(myTestReview)
+
+print("Probability of review being good: ", probOfGood, "\n", "Probability of review being bad: ",
+      probOfBad, "\n" "sum of probabilities: ", (probOfBad+probOfGood))
