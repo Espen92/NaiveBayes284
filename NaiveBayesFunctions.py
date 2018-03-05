@@ -1,7 +1,7 @@
 import os
 import numpy as np
-import math
 from collections import Counter
+import math
 
 
 # henter listen av filer
@@ -49,42 +49,53 @@ def addWords(theList):
 # theList is posList or negList
 
 
-def prob(review, wordsDict, theList, allWords):
+def prob(review, wordsDict, lisLen, allWords):
 
-    currentP = 0.5  # start with the probability of a review being good or bad, here that is 50/50
-    # if there is a new word in this review, add it to allWords with 0 occurances
+    currentP = 0.5
     for word in review:
         if word not in allWords:
             allWords[word] = 0
-
+    allWLeng = len(allWords)
     for word in allWords:
-        # if the word is in any positive/negative review, get the likelyhood of that that word given that the review is pos/neg and
-        # multiply it by the current probability
-        # this way we get P(w[i]|y)*P(w[... i ... ]|y)
-        if word in wordsDict:
-            # first check if the word is in the wordDict, if it isn't that means
-            # the probability of that word, given that y is 0
-            if word in review:
-                # if the word IS in the review, that attribute is True, so we take the prob of it
-                currentP = currentP * (wordsDict[word]/theList.__len__())
-            else:
-                # if it isn't in the review, it is False, so we take the inverse of the P (1-p)
-                currentP = currentP * (1-(wordsDict[word]/theList.__len__()))
-        # otherwise the P(w[i]|y=1) is 0, we will revisit this so it'sæ not actually 0
+        if word in review:
+            currentP = currentP * ((wordsDict[word]+1)/(allWLeng+lisLen))
         else:
-            if word in review:
-                currentP = currentP * 0
-            else:
-                currentP = currentP * (1-0)
-    print(currentP)
+            currentP = currentP * (1-((wordsDict[word]+1)/(allWLeng+lisLen)))
     return currentP
 
 
-def probOfPositive(review, posWordsDict, posList, negList, negWordsDict, allWords):
-    return prob(review, posWordsDict, posList, allWords)/(prob(review, negWordsDict, negList, allWords) +
-                                                          prob(review, posWordsDict, posList, allWords))
+def probOfPositive(review, posWordsDict, posListLeng, negListLeng, negWordsDict, allWords):
+    po = prob(review, posWordsDict, posListLeng, allWords)
+    ne = prob(review, negWordsDict, negListLeng, allWords)
+    return po/(po+ne)
 
 
-def probOfNegative(review, posWordsDict, posList, negList, negWordsDict, allWords):
-    return prob(review, negWordsDict, negList, allWords)/(prob(review, negWordsDict, negList, allWords) +
-                                                          prob(review, posWordsDict, posList, allWords))
+def probOfNegative(review, posWordsDict, posListLeng, negListLeng, negWordsDict, allWords):
+    po = prob(review, posWordsDict, posListLeng, allWords)
+    ne = prob(review, negWordsDict, negListLeng, allWords)
+    return ne/(po+ne)
+
+
+def getProbs(review, posWordsDict, posListLeng, negListLeng, negWordsDict, allWords):
+    po = prob(review, posWordsDict, posListLeng, allWords)
+    ne = prob(review, negWordsDict, negListLeng, allWords)
+    probOfPos = po/(po+ne)
+    probOfNeg = ne/(po+ne)
+    return probOfPos, probOfNeg
+
+
+def probLOG(review, wordsDict, listLength, allWords):
+
+    currentP = math.log(0.5)
+    for word in review:
+        if word not in allWords:
+            allWords[word] = 0
+    allWLeng = len(allWords)
+    for word in allWords:
+        if word in review:
+            currentP = currentP + \
+                math.log(((wordsDict[word]+1)/(allWLeng+listLength)))
+        else:
+            currentP = currentP + \
+                math.log((1-((wordsDict[word]+1)/(allWLeng+listLength))))
+    return currentP
