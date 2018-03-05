@@ -42,16 +42,11 @@ for rev in posTestReviewsList:
 
 #%%
 # test
-myTestReview = ["I", "liked", "it", "okay",
-                "but", "I", "have", "seen", "better"]
+myTestReview = ["I", "liked", "it", "it", "was", "nice"]
 
 probOfGood = nb.probOfPositive(
-    myTestReview, posWordsDict, posList, negList, negWordsDict, allWords)
+    myTestReview, posWordsDict, len(posList), len(negList), negWordsDict, allWords)
 probOfBad = nb.probOfNegative(
-    myTestReview, posWordsDict, posList, negList, negWordsDict, allWords)
+    myTestReview, posWordsDict, len(posList), len(negList), negWordsDict, allWords)
 print("Probability of review being good: ", probOfGood, "\n", "Probability of review being bad: ",
       probOfBad, "\n" "sum of probabilities: ", (probOfBad+probOfGood))
-
-
-#%%
-print(posWordsDict["unexpected"])

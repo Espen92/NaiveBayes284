@@ -51,41 +51,6 @@ def addWords(theList):
 
 def prob(review, wordsDict, lisLen, allWords):
 
-    currentP = 0.5
-    for word in review:
-        if word not in allWords:
-            allWords[word] = 0
-    allWLeng = len(allWords)
-    for word in allWords:
-        if word in review:
-            currentP = currentP * ((wordsDict[word]+1)/(allWLeng+lisLen))
-        else:
-            currentP = currentP * (1-((wordsDict[word]+1)/(allWLeng+lisLen)))
-    return currentP
-
-
-def probOfPositive(review, posWordsDict, posListLeng, negListLeng, negWordsDict, allWords):
-    po = prob(review, posWordsDict, posListLeng, allWords)
-    ne = prob(review, negWordsDict, negListLeng, allWords)
-    return po/(po+ne)
-
-
-def probOfNegative(review, posWordsDict, posListLeng, negListLeng, negWordsDict, allWords):
-    po = prob(review, posWordsDict, posListLeng, allWords)
-    ne = prob(review, negWordsDict, negListLeng, allWords)
-    return ne/(po+ne)
-
-
-def getProbs(review, posWordsDict, posListLeng, negListLeng, negWordsDict, allWords):
-    po = prob(review, posWordsDict, posListLeng, allWords)
-    ne = prob(review, negWordsDict, negListLeng, allWords)
-    probOfPos = po/(po+ne)
-    probOfNeg = ne/(po+ne)
-    return probOfPos, probOfNeg
-
-
-def probLOG(review, wordsDict, listLength, allWords):
-
     currentP = math.log(0.5)
     for word in review:
         if word not in allWords:
@@ -94,8 +59,28 @@ def probLOG(review, wordsDict, listLength, allWords):
     for word in allWords:
         if word in review:
             currentP = currentP + \
-                math.log(((wordsDict[word]+1)/(allWLeng+listLength)))
+                math.log(((wordsDict[word]+1)/(allWLeng+lisLen)))
         else:
             currentP = currentP + \
-                math.log((1-((wordsDict[word]+1)/(allWLeng+listLength))))
+                math.log((1-((wordsDict[word]+1)/(allWLeng+lisLen))))
     return currentP
+
+
+def probOfPositive(review, posWordsDict, posListLeng, negListLeng, negWordsDict, allWords):
+    po = prob(review, posWordsDict, posListLeng, allWords)
+    ne = prob(review, negWordsDict, negListLeng, allWords)
+    return ne/(po+ne)
+
+
+def probOfNegative(review, posWordsDict, posListLeng, negListLeng, negWordsDict, allWords):
+    po = prob(review, posWordsDict, posListLeng, allWords)
+    ne = prob(review, negWordsDict, negListLeng, allWords)
+    return po/(po+ne)
+
+
+def getProbs(review, posWordsDict, posListLeng, negListLeng, negWordsDict, allWords):
+    po = prob(review, posWordsDict, posListLeng, allWords)
+    ne = prob(review, negWordsDict, negListLeng, allWords)
+    probOfPos = ne/(po+ne)
+    probOfNeg = po/(po+ne)
+    return probOfPos, probOfNeg
