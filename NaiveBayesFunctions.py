@@ -81,6 +81,6 @@ def probOfNegative(review, posWordsDict, posListLeng, negListLeng, negWordsDict,
 def getProbs(review, posWordsDict, posListLeng, negListLeng, negWordsDict, allWords):
     po = prob(review, posWordsDict, posListLeng, allWords)
     ne = prob(review, negWordsDict, negListLeng, allWords)
-    probOfPos = ne/(po+ne)
-    probOfNeg = po/(po+ne)
+    probOfPos = po/(po+ne)
+    probOfNeg = ne/(po+ne)
     return probOfPos, probOfNeg

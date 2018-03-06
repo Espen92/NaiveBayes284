@@ -1,35 +1,86 @@
 import os
+import NaiveBayes as nb
+
+myPotatoes = 0
+list_ = []
+i = 0
 
 
-def potato():
-    for i in range(5):
-        print(f"{i} potato")
-        
-
-def apple():
-    for i in range(5):
-        print(f"{i} apple")
+def plussPotato(i):
+    global myPotatoes
+    myPotatoes += i
 
 
-#for å cleare på både mac å pc ..i think?
+def printPotato():
+    print(f"number of potatoes {myPotatoes}")
+
+
+# for å cleare på både mac å pc ..i think?
 def clearAllTheThings():
-    os.system('cls' if os.name=='nt' else 'clear')
+    os.system('cls' if os.name == 'nt' else 'clear')
 
-def help_menu():
-    print("""    --------------Help Menu---------
-    | ctrl + c will stop the script. (os->windows)
-    |
-    |   Commands:      Explanation:
-    |   potato          - runs potato.
-    |   apple           - runs apple.
-    |   ----------------------------
-    |   stop,
-    |   kill,
-    |   exit            - stops the script
-    |   clear           - clears this window
-    |   about           - about things
-    |   help            - shows this
-    --------------------------------""")
+
+def help_menu(level):
+    if level == 0:
+        print("""    --------------Help Menu---------
+        | ctrl + c will stop the script. (os->windows)
+        |
+        |   Commands:      Explanation:
+        |   potato          - runs potato.
+        |   load            - loads the data
+        |   ----------------------------
+        |   stop,
+        |   kill,
+        |   exit            - stops the script
+        |   clear           - clears this window
+        |   about           - about things
+        |   help            - shows this
+        --------------------------------""")
+    if level == 1:
+        print("""    --------------Help Menu---------
+        | ctrl + c will stop the script. (os->windows)
+        |
+        |   Commands:      Explanation:
+        |   any number      - add x potatoes
+        |   ----------------------------
+        |   stop,
+        |   kill,
+        |   exit            - stops the script
+        |   clear           - clears this window
+        |   about           - about things
+        |   help            - shows this
+        --------------------------------""")
+    if level == 2:
+        print("""    --------------Help Menu---------
+        | ctrl + c will stop the script. (os->windows)
+        |
+        |   Commands:      Explanation:
+        |   test            - runs a predefined test
+        |   score           - scores based on the entire test set
+        |   class           - lets you input a review
+        |   ----------------------------
+        |   stop,
+        |   kill,
+        |   exit            - stops the script
+        |   clear           - clears this window
+        |   about           - about things
+        |   help            - shows this
+        --------------------------------""")
+    if level == 3:
+        print("""    --------------Help Menu---------
+        | ctrl + c will stop the script. (os->windows)
+        |
+        |   Commands:      Explanation:
+        |   any text        - classifies your review
+        |   ----------------------------
+        |   stop,
+        |   kill,
+        |   exit            - stops the script
+        |   clear           - clears this window
+        |   about           - about things
+        |   help            - shows this
+        --------------------------------""")
+
 
 def aboutus():
     print("""
@@ -38,6 +89,7 @@ def aboutus():
     stuff...lalalala...
     a.a.a.aallflld
     """)
+
 
 def stopAll():
     quit()
