@@ -1,3 +1,5 @@
+import tkinter
+from tkinter import filedialog
 
 
 import jupyter
@@ -23,8 +25,12 @@ def loadData():
     global allWords
     global posTestReviewsList
     global negTestReviewsList
-    neg = "..\\Data\\train\\neg\\"
-    pos = "..\\Data\\train\\pos\\"
+
+    print("choose your 'Data' folder")
+    tkinter.Tk().withdraw()
+    filename = filedialog.askdirectory()
+    neg = f"{filename}\\train\\neg\\"
+    pos = f"{filename}\\train\\pos\\"
     negativeData = nb.getTrainData(neg)
     positiveData = nb.getTrainData(pos)
     print("got the paths")
@@ -39,8 +45,8 @@ def loadData():
     allWords = Counter(negWordsDict) + Counter(posWordsDict)
     print("made the dicts")
 
-    testNeg = "..\\Data\\test\\neg\\"
-    testPos = "..\\Data\\test\\pos\\"
+    testNeg = f"{filename}\\test\\neg\\"
+    testPos = f"{filename}\\test\\pos\\"
     print("getting test data")
     posTestReviewsList = nb.createArrayList(nb.getTrainData(testPos), testPos)
     negTestReviewsList = nb.createArrayList(nb.getTrainData(testNeg), testNeg)

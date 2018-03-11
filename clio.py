@@ -58,6 +58,7 @@ def commandy(level):
     commandy(level)
 
 
-clearAllTheThings()
-print("\nPlease type a command or type \"help\" for alternatives")
-commandy(0)
+if __name__ == '__main__':
+    clearAllTheThings()
+    print("\nPlease type a command or type \"help\" for alternatives")
+    commandy(0)
