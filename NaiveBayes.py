@@ -2,11 +2,9 @@ import tkinter
 from tkinter import filedialog
 
 
-import jupyter
 import NaiveBayesFunctions as nb
 from collections import Counter
 import math
-import pathlib
 
 posList = None
 negList = None
@@ -59,35 +57,23 @@ def score():
     counter = 0
     pListLeng = len(posList)
     nListLeng = len(negList)
+    probs, zeroV, emptyPos, emptyNeg = nb.preProb(posWordsDict, pListLeng,
+                                                  negWordsDict, nListLeng, allWords)
     for rev in posTestReviewsList:
         counter += 1
-        neg, pos = nb.getProbs(rev, posWordsDict, pListLeng,
-                               nListLeng, negWordsDict, allWords)
+        neg, pos = nb.getProbs(rev, probs, zeroV, emptyPos, emptyNeg)
         if pos > neg:
             gotItRight += 1
-        print(neg, pos, (neg+pos))
         print(f"score {gotItRight/counter}")
 
 
 def classify(review):
     pListLeng = len(posList)
     nListLeng = len(negList)
-    neg, pos = nb.getProbs(review, posWordsDict, pListLeng,
-                           nListLeng, negWordsDict, allWords)
+    probs, zeroV, emptyPos, emptyNeg = nb.preProb(posWordsDict, pListLeng,
+                                                  negWordsDict, nListLeng, allWords)
+    neg, pos = nb.getProbs(review, probs, zeroV, emptyPos, emptyNeg)
     if neg > pos:
         print("Your review is negative")
     else:
         print("Your review is positive")
-
-# test
-
-
-def myTest():
-    myTestReview = ["I", "liked", "it", "it", "was", "nice"]
-
-    probOfGood = nb.probOfPositive(
-        myTestReview, posWordsDict, len(posList), len(negList), negWordsDict, allWords)
-    probOfBad = nb.probOfNegative(
-        myTestReview, posWordsDict, len(posList), len(negList), negWordsDict, allWords)
-    print("Probability of review being good: ", probOfGood, "\n", "Probability of review being bad: ",
-          probOfBad, "\n" "sum of probabilities: ", (probOfBad+probOfGood))

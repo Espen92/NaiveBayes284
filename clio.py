@@ -1,10 +1,8 @@
 from cli_Stuff import *
 import NaiveBayes as nb
-import jupyter
 import NaiveBayesFunctions
 from collections import Counter
 import math
-import pathlib
 import os
 import numpy as np
 

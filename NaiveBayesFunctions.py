@@ -45,42 +45,61 @@ def addWords(theList):
                     dic[everyWord] = 1
     return dic
 
+
 # return the probability of a review boing of a given type, wordsDict is posWordsDict or negWordsDict
 # theList is posList or negList
-
-
-def prob(review, wordsDict, lisLen, allWords):
-
-    currentP = math.log(0.5)
-    for word in review:
-        if word not in allWords:
-            allWords[word] = 0
+def preProb(poswordsDict, poslisLen, negwordsDict, neglisLen, allWords):
+    print("")
     allWLeng = len(allWords)
+    new_dict = {}
+    emptyPosProb = math.log(0.5)
+    emptyNegProb = math.log(0.5)
     for word in allWords:
+        x = (math.log(((negwordsDict[word]+1)/(allWLeng+neglisLen))), math.log(((poswordsDict[word]+1)/(allWLeng+poslisLen))),
+             math.log((1-((negwordsDict[word]+1)/(allWLeng+neglisLen)))),     math.log((1-((poswordsDict[word]+1)/(allWLeng+poslisLen)))))
+        new_dict[word] = x
+        emptyNegProb += x[2]
+        emptyPosProb += x[3]
+    firstTimeValue = (math.log(1/(allWLeng+neglisLen)), math.log(1/(allWLeng+poslisLen)),
+                      math.log(1-(1/(allWLeng+neglisLen))), math.log(1-(1/(allWLeng+poslisLen))))
+
+    return new_dict, firstTimeValue, emptyPosProb, emptyNegProb
+
+
+def prob(review, probsDict, firstTimeValue, emptyPosProb, emptyNegProb):
+    if review.shape != ():
+        for word in review:
+            if word not in probsDict:
+                probsDict[word] = firstTimeValue
+                emptyPosProb += firstTimeValue[1]
+                emptyNegProb += firstTimeValue[0]
+            else:
+                wProbs = probsDict[word]
+                emptyNegProb += (wProbs[0] - wProbs[2])
+                emptyPosProb += (wProbs[1] - wProbs[3])
+
+    return emptyPosProb, emptyNegProb
+
+
+def prob2(review, probsDict, firstTimeValue):
+    currentNegP = math.log(0.5)
+    currentPosP = math.log(0.5)
+    for word in review:
+        if word not in probsDict:
+            probsDict[word] = firstTimeValue
+    for word in probsDict:
+        wordProbs = probsDict[word]
         if word in review:
-            currentP = currentP + \
-                math.log(((wordsDict[word]+1)/(allWLeng+lisLen)))
+            currentNegP += wordProbs[0]
+            currentPosP += wordProbs[1]
         else:
-            currentP = currentP + \
-                math.log((1-((wordsDict[word]+1)/(allWLeng+lisLen))))
-    return currentP
+            currentNegP += wordProbs[2]
+            currentPosP += wordProbs[3]
+    return currentPosP, currentNegP
 
 
-def probOfPositive(review, posWordsDict, posListLeng, negListLeng, negWordsDict, allWords):
-    po = prob(review, posWordsDict, posListLeng, allWords)
-    ne = prob(review, negWordsDict, negListLeng, allWords)
-    return ne/(po+ne)
-
-
-def probOfNegative(review, posWordsDict, posListLeng, negListLeng, negWordsDict, allWords):
-    po = prob(review, posWordsDict, posListLeng, allWords)
-    ne = prob(review, negWordsDict, negListLeng, allWords)
-    return po/(po+ne)
-
-
-def getProbs(review, posWordsDict, posListLeng, negListLeng, negWordsDict, allWords):
-    po = prob(review, posWordsDict, posListLeng, allWords)
-    ne = prob(review, negWordsDict, negListLeng, allWords)
+def getProbs(review, probs, zeroV, emptyPosProb, emptyNegProb):
+    po, ne = prob(review, probs, zeroV, emptyPosProb, emptyNegProb)
     probOfPos = po/(po+ne)
     probOfNeg = ne/(po+ne)
     return probOfPos, probOfNeg
