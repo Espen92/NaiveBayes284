@@ -31,8 +31,6 @@ def doStuff(c, level):
         level = 0
     elif ((level == 2)and(c == "score")):
         nb.score()
-    elif ((level == 2)and(c == "test")):
-        nb.myTest()
     elif ((level == 2)and(c == "class")):
         level = 3
     elif (level == 3):

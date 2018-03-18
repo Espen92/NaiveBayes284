@@ -2,7 +2,7 @@ import os
 import numpy as np
 from collections import Counter
 import math
-
+from string import punctuation
 
 # henter listen av filer
 
@@ -24,6 +24,28 @@ def createArrayList(data, path):
 
             theList.append(wordsarray)
     return theList
+
+
+def createArrayList2(path):
+    pos_list = []
+    neg_list = []
+    neg = os.listdir(path+"\\neg\\")
+    pos = os.listdir(path+"\\pos\\")
+    table = str.maketrans('', '', punctuation)
+    for file_ in neg:
+        with open(path+"\\neg\\"+file_, encoding='utf-8') as f:
+            text = f.read().lower()
+            cleanText = text.translate(table)
+            wordsarray = np.array(cleanText.split())
+            neg_list.append(wordsarray)
+
+    for file_ in pos:
+        with open(path+"\\pos\\"+file_, encoding='utf-8') as fi:
+            text = fi.read().lower()
+            cleanText = text.translate(table)
+            wordsarray = np.array(cleanText.split())
+            pos_list.append(wordsarray)
+    return pos_list, neg_list
 
 
 # tar inn en liste av words arrays og returnerer en dictionary som inneholder

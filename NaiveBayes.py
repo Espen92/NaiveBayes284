@@ -1,6 +1,6 @@
 import tkinter
 from tkinter import filedialog
-
+import numpy as np
 
 import NaiveBayesFunctions as nb
 from collections import Counter
@@ -24,18 +24,14 @@ def loadData():
     global posTestReviewsList
     global negTestReviewsList
 
-    print("choose your 'Data' folder")
+    print("choose your 'train' folder")
     tkinter.Tk().withdraw()
-    filename = filedialog.askdirectory()
-    neg = f"{filename}\\train\\neg\\"
-    pos = f"{filename}\\train\\pos\\"
-    negativeData = nb.getTrainData(neg)
-    positiveData = nb.getTrainData(pos)
-    print("got the paths")
+    folderpath = filedialog.askdirectory()
 
     # lager en liste av de positive og en av de negative
-    posList = nb.createArrayList(positiveData, pos)
-    negList = nb.createArrayList(negativeData, neg)
+   # posList = nb.createArrayList(positiveData, pos)
+   # negList = nb.createArrayList(negativeData, neg)
+    posList, negList = nb.createArrayList2(folderpath)
     print("made the lists")
     # lager dictionaries med antall reviews disse ordene forekommer i (ut av de positive/negative)
     negWordsDict = nb.addWords(negList)
@@ -43,13 +39,11 @@ def loadData():
     allWords = Counter(negWordsDict) + Counter(posWordsDict)
     print("made the dicts")
 
-    testNeg = f"{filename}\\test\\neg\\"
-    testPos = f"{filename}\\test\\pos\\"
-    print("getting test data")
-    posTestReviewsList = nb.createArrayList(nb.getTrainData(testPos), testPos)
-    negTestReviewsList = nb.createArrayList(nb.getTrainData(testNeg), testNeg)
-
-    print("loading done")
+    print("choose your 'test' folder")
+    tkinter.Tk().withdraw()
+    testDirPath = filedialog.askdirectory()
+    posTestReviewsList, negTestReviewsList = nb.createArrayList2(testDirPath)
+    print("loading done, type 'help' for helpfull commands")
 
 
 def score():
@@ -64,15 +58,28 @@ def score():
         neg, pos = nb.getProbs(rev, probs, zeroV, emptyPos, emptyNeg)
         if pos > neg:
             gotItRight += 1
-        print(f"score {gotItRight/counter}")
+        if counter % 1000 == 0:
+            dots = counter//1000 % 4
+            print("working", dots*".")
+    for rev in negTestReviewsList:
+        counter += 1
+        neg, pos = nb.getProbs(rev, probs, zeroV, emptyPos, emptyNeg)
+        if pos < neg:
+            gotItRight += 1
+        if counter % 1000 == 0:
+            dots = counter//1000 % 4
+            print("working", dots*".")
+    print(f"score {gotItRight/counter}")
 
 
 def classify(review):
+    review_list = np.array(review.split())
+    print(type(review_list))
     pListLeng = len(posList)
     nListLeng = len(negList)
     probs, zeroV, emptyPos, emptyNeg = nb.preProb(posWordsDict, pListLeng,
                                                   negWordsDict, nListLeng, allWords)
-    neg, pos = nb.getProbs(review, probs, zeroV, emptyPos, emptyNeg)
+    neg, pos = nb.getProbs(review_list, probs, zeroV, emptyPos, emptyNeg)
     if neg > pos:
         print("Your review is negative")
     else:
