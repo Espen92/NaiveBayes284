@@ -14,19 +14,7 @@ def getTrainData(trainDataFolder):
 # numpy arrayene inneholder hver enkelt ord i et review
 
 
-def createArrayList(data, path):
-    theList = []
-    for file_ in data:
-        with open(path+file_, encoding='utf8') as f:
-            text = f.readlines()
-            wordsarray = np.genfromtxt(
-                text, case_sensitive="lower", dtype=str)
-
-            theList.append(wordsarray)
-    return theList
-
-
-def createArrayList2(path):
+def createArrayList(path):
     pos_list = []
     neg_list = []
     neg = os.listdir(path+"\\neg\\")
