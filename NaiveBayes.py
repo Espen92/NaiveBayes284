@@ -4,7 +4,7 @@ import numpy as np
 import NaiveBayesFunctions as nb
 from collections import Counter
 import math
-from cli_Stuff import print_inline
+from interface_functions import print_inline
 
 posList = None
 negList = None

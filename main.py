@@ -1,4 +1,4 @@
-from cli_Stuff import help_menu, clearAllTheThings, aboutus
+from interface_functions import help_menu, clearAllTheThings, aboutus
 import NaiveBayes as nb
 import NaiveBayesFunctions
 from collections import Counter

@@ -55,7 +55,6 @@ def get_menu(*commands):
 def aboutus():
     print("""
     Native Bais implemented by people
-    HME005,TPE044,etc..
-    stuff...lalalala...
-    a.a.a.aallflld
+    HME005,TPE044,EOS005
+    Hans, Thomas og Espen
     """)
