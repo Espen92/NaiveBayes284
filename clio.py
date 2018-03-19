@@ -1,4 +1,4 @@
-from cli_Stuff import *
+from cli_Stuff import help_menu, clearAllTheThings, aboutus
 import NaiveBayes as nb
 import NaiveBayesFunctions
 from collections import Counter
@@ -11,6 +11,13 @@ import numpy as np
 
 
 def doStuff(c, level):
+    """
+    Tar input fra command line og kjører kjører korrekt command
+
+    Keyword arguments:
+    c     -- Commandline input
+    level -- hvilken state scriptet er i
+    """
     if (c == "exit" or c == "stop" or c == "kill"):
         quit()
     elif (c == "clear"):
@@ -19,16 +26,9 @@ def doStuff(c, level):
         help_menu(level)
     elif (c == "about"):
         aboutus()
-    elif ((level == 0)and(c == "potato")):
-        level = 1
     elif ((level == 0)and(c == "load")):
         nb.loadData()
         level = 2
-    elif ((level == 1)and(str.isdigit(c))):
-        inp = int(c)
-        plussPotato(inp)
-        printPotato()
-        level = 0
     elif ((level == 2)and(c == "score")):
         nb.score()
     elif ((level == 2)and(c == "class")):
@@ -45,6 +45,7 @@ def doStuff(c, level):
 
 
 def commandy(level):
+    """Lager en fin input display"""
     if level == 1:
         print("How many potatoes?")
     print("")

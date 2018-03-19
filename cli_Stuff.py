@@ -1,77 +1,38 @@
 import os
-import NaiveBayes as nb
-
-myPotatoes = 0
-list_ = []
-i = 0
-
-
-def plussPotato(i):
-    global myPotatoes
-    myPotatoes += i
-
-
-def printPotato():
-    print(f"number of potatoes {myPotatoes}")
+import sys
 
 
 # for å cleare på både mac å pc ..i think?
+def print_inline(*args):
+    print("".join(args))
+    sys.stdout.write("\033[F")
+    sys.stdout.write("\033[K")
+
+
 def clearAllTheThings():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 
 def help_menu(level):
     if level == 0:
-        print("""    --------------Help Menu---------
-        | ctrl + c will stop the script. (os->windows)
-        |
-        |   Commands:      Explanation:
-        |   potato          - runs potato.
-        |   load            - loads the data
-        |   ----------------------------
-        |   stop,
-        |   kill,
-        |   exit            - stops the script
-        |   clear           - clears this window
-        |   about           - about things
-        |   help            - shows this
-        --------------------------------""")
-    if level == 1:
-        print("""    --------------Help Menu---------
-        | ctrl + c will stop the script. (os->windows)
-        |
-        |   Commands:      Explanation:
-        |   any number      - add x potatoes
-        |   ----------------------------
-        |   stop,
-        |   kill,
-        |   exit            - stops the script
-        |   clear           - clears this window
-        |   about           - about things
-        |   help            - shows this
-        --------------------------------""")
+        print(get_menu(("load", "loads the data")))
     if level == 2:
-        print("""    --------------Help Menu---------
-        | ctrl + c will stop the script. (os->windows)
-        |
-        |   Commands:      Explanation:
-        |   test            - runs a predefined test
-        |   score           - scores based on the entire test set
-        |   class           - lets you input a review
-        |   ----------------------------
-        |   stop,
-        |   kill,
-        |   exit            - stops the script
-        |   clear           - clears this window
-        |   about           - about things
-        |   help            - shows this
-        --------------------------------""")
+        print(get_menu(("score", "scores based on the entire test set"),
+                       ("class", "lets you input a review")))
     if level == 3:
-        print("""    --------------Help Menu---------
+        print(get_menu(("any text", "classifies your review")))
+
+
+def get_menu(*commands):
+    commandsstr = ""
+    for command, desc in commands:
+        commandsstr += f"\n|   {command}            - {desc}"
+
+    return f"""    --------------Help Menu---------
         | ctrl + c will stop the script. (os->windows)
         |
         |   Commands:      Explanation:
-        |   any text        - classifies your review
+        |{commands}
         |   ----------------------------
         |   stop,
         |   kill,
@@ -79,7 +40,8 @@ def help_menu(level):
         |   clear           - clears this window
         |   about           - about things
         |   help            - shows this
-        --------------------------------""")
+        --------------------------------
+    """
 
 
 def aboutus():
@@ -89,7 +51,3 @@ def aboutus():
     stuff...lalalala...
     a.a.a.aallflld
     """)
-
-
-def stopAll():
-    quit()

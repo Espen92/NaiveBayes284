@@ -20,6 +20,9 @@ def createArrayList(path):
     neg = os.listdir(path+"\\neg\\")
     pos = os.listdir(path+"\\pos\\")
     table = str.maketrans('', '', punctuation)
+    print(f"Loading: {path}")
+    print(
+        f"This set contains {len(neg)+len(pos)} files\nNow loading the set please wait...")
     for file_ in neg:
         with open(path+"\\neg\\"+file_, encoding='utf-8') as f:
             text = f.read().lower()
@@ -33,6 +36,7 @@ def createArrayList(path):
             cleanText = text.translate(table)
             wordsarray = np.array(cleanText.split())
             pos_list.append(wordsarray)
+    print("Loading done")
     return pos_list, neg_list
 
 
@@ -89,23 +93,6 @@ def prob(review, probsDict, firstTimeValue, emptyPosProb, emptyNegProb):
                 emptyPosProb += (wProbs[1] - wProbs[3])
 
     return emptyPosProb, emptyNegProb
-
-
-def prob2(review, probsDict, firstTimeValue):
-    currentNegP = math.log(0.5)
-    currentPosP = math.log(0.5)
-    for word in review:
-        if word not in probsDict:
-            probsDict[word] = firstTimeValue
-    for word in probsDict:
-        wordProbs = probsDict[word]
-        if word in review:
-            currentNegP += wordProbs[0]
-            currentPosP += wordProbs[1]
-        else:
-            currentNegP += wordProbs[2]
-            currentPosP += wordProbs[3]
-    return currentPosP, currentNegP
 
 
 def getProbs(review, probs, zeroV, emptyPosProb, emptyNegProb):
