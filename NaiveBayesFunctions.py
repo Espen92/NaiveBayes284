@@ -4,17 +4,18 @@ from collections import Counter
 import math
 from string import punctuation
 
-# henter listen av filer
-
-
-def getTrainData(trainDataFolder):
-    return os.listdir(trainDataFolder)
-
-# tar en liste med filnavn og path til filene og lager en liste av numpy arrays
-# numpy arrayene inneholder hver enkelt ord i et review
-
 
 def createArrayList(path):
+    """
+    Lager to lister med numpy arrays for alle ordene
+
+    Keyword arguments:
+    path -- directory som inneholder pos og neg mappen for filene
+
+    returns:
+    pos_list -- Liste med reviews splitta i numpy array for orda (Positive reviews)
+    neg_list -- Liste med reviews splitta i numpy array for orda (Negative reviews)
+    """
     pos_list = []
     neg_list = []
     neg = os.listdir(path+"\\neg\\")
@@ -45,6 +46,16 @@ def createArrayList(path):
 # som tilsvarer antall reviews som inneholder det ordet
 
 def addWords(theList):
+    """
+    Tar inn en liste av ord nmp arrays og returnere en dictionary som inneholder
+    hvert ord som finnes i noe array med ordet som key, og verdi som antall forekomster av ordet
+
+    Keyword arguments:
+    theList -- Listen med nmp arrays som inneholder ord (liste med reviews splitta i nmp arrays)
+
+    returns:
+    dic --  Dictionary hvor hvert ord er scora basert på frequency
+    """
     dic = Counter()
     for eachReview in theList:
         tempDic = {}
@@ -60,8 +71,6 @@ def addWords(theList):
     return dic
 
 
-# return the probability of a review boing of a given type, wordsDict is posWordsDict or negWordsDict
-# theList is posList or negList
 def preProb(poswordsDict, poslisLen, negwordsDict, neglisLen, allWords):
     print("")
     allWLeng = len(allWords)

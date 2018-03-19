@@ -10,10 +10,12 @@ def print_inline(*args):
 
 
 def clearAllTheThings():
+    """Clears command prompt in win & ios"""
     os.system('cls' if os.name == 'nt' else 'clear')
 
 
 def help_menu(level):
+    """Print selector for help menu"""
     if level == 0:
         print(get_menu(("load", "loads the data")))
     if level == 2:
@@ -24,6 +26,12 @@ def help_menu(level):
 
 
 def get_menu(*commands):
+    """
+    Generere help menu med extra commands
+
+    Keyword arguments:
+    *commands - en iterable med toupler som holder på command navn, og description
+    """
     commandsstr = ""
     for command, desc in commands:
         commandsstr += f"\n|   {command}            - {desc}"

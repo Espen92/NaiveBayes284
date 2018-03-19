@@ -16,6 +16,11 @@ negTestReviewsList = None
 
 
 def loadData():
+    """
+    Lets the user choose what folders to load train and test data from and creates
+    lists of reviews and dictionaries of word frequencies. The choosen folders must
+    have subfolders named pos and neg.
+    """
     global posList
     global negList
     global negWordsDict
@@ -46,6 +51,11 @@ def loadData():
 
 
 def score():
+    """
+    Goes through every review in the test folder and attempts to classify it. 
+    Then checks if the classification was right or not and updates the score 
+    accordingly. Finally displays the score.
+    """
     gotItRight = 0
     counter = 0
     pListLeng = len(posList)
@@ -72,6 +82,10 @@ def score():
 
 
 def classify(review):
+    """
+    attempts to classify a review submited by a user and prints if 
+    it is posive or negative
+    """
     review_list = np.array(review.split())
     pListLeng = len(posList)
     nListLeng = len(negList)
