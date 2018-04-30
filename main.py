@@ -1,61 +1,50 @@
 from interface_functions import help_menu, clearAllTheThings, aboutus
-import NaiveBayes as nb
+from NaiveBayes import NaiveBayes
 import NaiveBayesFunctions
 from collections import Counter
 import math
 import os
 import numpy as np
+import json as json
 
 
-# vurdere commands å kjører om input stemmer...
+__location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
+class MenuClass:
+    def __init__(self, nb):
+        self.state = 0
+        self.nb = nb
+        self.prompt()
 
-def doStuff(c, level):
-    """
-    Tar input fra command line og kjører kjører korrekt command
+    def print_state_menu(self):
+        with open(os.path.join(__location__,"menus.json"), "r") as data:
+            j_data = json.load(data)
+            for line in j_data[self.state]:
+                print(line)
 
-    Keyword arguments:
-    c     -- Commandline input
-    level -- hvilken state scriptet er i
-    """
-    if (c == "exit" or c == "stop" or c == "kill"):
-        quit()
-    elif (c == "clear"):
-        clearAllTheThings()
-    elif (c == "help"):
-        help_menu(level)
-    elif (c == "about"):
-        aboutus()
-    elif ((level == 0)and(c == "load")):
-        nb.loadData()
-        level = 2
-    elif ((level == 2)and(c == "score")):
-        nb.score()
-    elif ((level == 2)and(c == "class")):
-        level = 3
-    elif (level == 3):
-        nb.classify(c)
-        level = 2
-    else:
-        print("! Unrecognized command, please try \"help\" to see an overview of available commands.")
-    return level
+    def prompt(self, **kwargs):
+        self.print_state_menu()
+        input_v = input("> ")
 
+        if input_v == "1":
+            self.go_state_1()
+        elif input_v == "2":
+            self.go_state_2()
+        elif input_v == "3":
+            self.go_state_3()
 
-# lage en fin input thingy..
+    def go_state_1(self):
+        pass
 
+    def go_state_2(self):
+        pass
 
-def commandy(level):
-    """Lager en fin input display"""
-    if level == 1:
-        print("How many potatoes?")
-    print("")
-    command = input("--> ")
-    print("")
-    level = doStuff(command, level)
-    commandy(level)
+    def go_state_3(self):
+        pass
 
 
 if __name__ == '__main__':
     clearAllTheThings()
-    print("\nPlease type a command or type \"help\" for alternatives")
-    commandy(0)
+    nb = NaiveBayes()
+    menu = MenuClass(nb)
+    menu.prompt()
