@@ -4,19 +4,10 @@
 		"Select option:",
 		"1. Generate model",
 		"2. Import model",
-		"3. About us"
-		],
-		[
-		"Menu",
-		"Select option:",
-		"1. Score",
-		"2. Classify",
-		"3. About us"
-	],
-	[
-		"About us",
-		"Native Bais implemented by people",
-		"HME005,TPE044,EOS005",
-		"Hans, Thomas og Espen"
-	]
+		"3. Score",
+		"4. Classify",
+		"5. Classify file",
+		"6. About us",
+		"7. Save model"
+		]
 ]
