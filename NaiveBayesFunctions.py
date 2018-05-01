@@ -1,8 +1,12 @@
 import os
+import math
+
 import numpy as np
 from collections import Counter
-import math
 from string import punctuation
+
+def get_percent(part, full):
+    return (part*100) // (full*100)
 
 
 def createArrayList(path):
@@ -24,19 +28,23 @@ def createArrayList(path):
     print(f"Loading: {path}")
     print(
         f"This set contains {len(neg)+len(pos)} files\nNow loading the set please wait...")
-    for file_ in neg:
+    for i, file_ in enumerate(neg):
+        print(f"Loaded file {(i+1)/len(neg):.0%} from negative...", end="\r")
         with open(path+"\\neg\\"+file_, encoding='utf-8') as f:
             text = f.read().lower()
             cleanText = text.translate(table)
             wordsarray = np.array(cleanText.split())
             neg_list.append(wordsarray)
 
-    for file_ in pos:
+    for i, file_ in enumerate(pos):
+        print(
+            f"Loaded file {(i+1)/len(pos):.0%} from positive...", end="\r")
         with open(path+"\\pos\\"+file_, encoding='utf-8') as fi:
             text = fi.read().lower()
             cleanText = text.translate(table)
             wordsarray = np.array(cleanText.split())
             pos_list.append(wordsarray)
+    print()
     print("Loading done")
     return pos_list, neg_list
 
@@ -77,7 +85,8 @@ def preProb(poswordsDict, poslisLen, negwordsDict, neglisLen, allWords):
     new_dict = {}
     emptyPosProb = math.log(0.5)
     emptyNegProb = math.log(0.5)
-    for word in allWords:
+    for i, word in enumerate(allWords):
+        print(f"Calculating... {(i+1)/len(allWords):.0%}", end="\r")
         x = (math.log(((negwordsDict[word]+1)/(allWLeng+neglisLen))), math.log(((poswordsDict[word]+1)/(allWLeng+poslisLen))),
              math.log((1-((negwordsDict[word]+1)/(allWLeng+neglisLen)))),     math.log((1-((poswordsDict[word]+1)/(allWLeng+poslisLen)))))
         new_dict[word] = x

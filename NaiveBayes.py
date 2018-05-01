@@ -1,14 +1,12 @@
-import math
 import os
-import numpy as np
 import json
 
 import tkinter
+import numpy as np
 from tkinter import filedialog
 from collections import Counter
 
 import NaiveBayesFunctions as nb
-from interface_functions import print_inline
 
 __location__ = os.path.realpath(os.path.join(
     os.getcwd(), os.path.dirname(__file__)))
@@ -22,10 +20,9 @@ class NaiveBayes:
         self.zeroV = None
         self.emptyPos = None
         self.emptyNeg = None
+        self.testDirPath = None
+        self.folderpath = None
 
-        print("choose your 'test' folder")
-        tkinter.Tk().withdraw()
-        self.testDirPath = filedialog.askdirectory()
 
     def set_review_list(self):
         if self.posTestReviewsList is not None and self.negTestReviewsList is not None:
@@ -41,12 +38,14 @@ class NaiveBayes:
         have subfolders named pos and neg.
         """
 
-        print("choose your 'train' folder")
-        tkinter.Tk().withdraw()
-        folderpath = filedialog.askdirectory()
+        self.load_train_folder()
+        self.load_test_folder()
 
+        if self.folderpath is None:
+            print("A training folder was not selected!")
+            return
 
-        posList, negList = nb.createArrayList(folderpath)
+        posList, negList = nb.createArrayList(self.folderpath)
         print("made the lists")
         # lager dictionaries med antall reviews disse ordene forekommer i (ut av de positive/negative)
         negWordsDict = nb.addWords(negList)
@@ -63,9 +62,9 @@ class NaiveBayes:
                                                       negWordsDict, nListLeng, allWords)
 
     def saveData(self):
-        if (self.probs is None or self.zeroV is None
-                or self.emptyPos is None or self.emptyNeg is None):
-            print("Generate or import model before saving model!")
+        """Saves model for quicker loading later"""
+        if self.is_not_loaded():
+            self.print_load_model()
             return
             
         values = {"probs": self.probs,
@@ -77,6 +76,8 @@ class NaiveBayes:
             json.dump(values, outfile)
 
     def load_data_from_file(self):
+        """Loads a already generated model from loadData"""
+        self.load_test_folder()
         self.set_review_list()
         with open(os.path.join(__location__, "preset_model.json"), "r") as data:
             j_data = json.load(data)
@@ -86,6 +87,19 @@ class NaiveBayes:
             self.emptyPos = j_data.get("emptyPos", None)
             self.emptyNeg = j_data.get("emptyNeg", None)
 
+
+    def load_test_folder(self):
+        """Loads folder with Test data"""
+        print("choose your 'test' folder")
+        tkinter.Tk().withdraw()
+        self.testDirPath = filedialog.askdirectory()
+
+    def load_train_folder(self):
+        """Loads folder with training data"""
+        print("choose your 'train' folder")
+        tkinter.Tk().withdraw()
+        self.folderpath = filedialog.askdirectory()
+
     def score(self):
         """
         Goes through every review in the test folder and attempts to classify it. 
@@ -93,9 +107,9 @@ class NaiveBayes:
         accordingly. Finally displays the score.
         """
 
-        if (self.probs is None or self.zeroV is None 
-                or self.emptyPos is None or self.emptyNeg is None):
-            print("Generate or import model before running score!")
+        print("Scoring... This may take a minute")
+        if self.is_not_loaded():
+            self.print_load_model()
             return
 
         gotItRight = 0
@@ -106,31 +120,42 @@ class NaiveBayes:
             neg, pos = nb.getProbs(rev, self.probs, self.zeroV, self.emptyPos, self.emptyNeg)
             if pos > neg:
                 gotItRight += 1
-            if counter % 1000 == 0:
-                dots = counter//1000 % 4
-                print_inline("working", dots*".")
+
+
         for rev in self.negTestReviewsList:
             counter += 1
             neg, pos = nb.getProbs(rev, self.probs, self.zeroV, self.emptyPos, self.emptyNeg)
             if pos < neg:
                 gotItRight += 1
-            if counter % 1000 == 0:
-                dots = counter//1000 % 4
-                print_inline("working", dots*".")
+
         print(f"score {gotItRight/counter}")
 
+    def is_not_loaded(self):
+        """Check to avoid nullpointers"""
+        return (self.probs is None or self.zeroV is None
+                or self.emptyPos is None or self.emptyNeg is None
+                or self.testDirPath is None)
 
-    def classify(self, review):
+    def print_load_model(self):
+        """Message sent if model is not generated or imported before use0"""
+        
+        os.system('cls' if os.name == 'nt' else 'clear')
+        print("============================================================")
+        print("|Generate or import model before running any other command!|")
+        print("============================================================")
+        print()
+
+    def classify(self, review=None):
         """
         attempts to classify a review submited by a user and prints if 
         it is posive or negative
         """
 
-        if (self.probs is None or self.zeroV is None
-                or self.emptyPos is None or self.emptyNeg is None):
-            print("Generate or import model before running classify!")
+        if self.is_not_loaded():
+            self.print_load_model()
             return
-
+        if review is None:
+            review = input("Give review to classify:")
         review_list = np.array(review.split())
         neg, pos = nb.getProbs(review_list, self.probs, self.zeroV, self.emptyPos, self.emptyNeg)
         if neg > pos:

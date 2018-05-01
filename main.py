@@ -1,11 +1,6 @@
-from interface_functions import help_menu, clearAllTheThings, aboutus
 from NaiveBayes import NaiveBayes
-import NaiveBayesFunctions
-from collections import Counter
-import math
 import os
 import sys
-import numpy as np
 import json as json
 
 import tkinter
@@ -16,42 +11,59 @@ __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file
 
 class MenuClass:
     def __init__(self, nb):
+        self.loaded_model = False
         self.nb = nb
-        self.clearAllTheThings()
         self.prompt()
+
+
+        with open(os.path.join(__location__, "menus.json"), "r") as data:
+            self.menu = json.load(data)
 
     def clearAllTheThings(self):
         """Clears command prompt in win & ios"""
         os.system('cls' if os.name == 'nt' else 'clear')
 
     def print_state_menu(self):
+        """Prints menu """
         self.clearAllTheThings()
-        with open(os.path.join(__location__,"menus.json"), "r") as data:
-            j_data = json.load(data)
-            for line in j_data[0]:
-                print(line)
+        if self.loaded_model:
+            print("Model IS TRAINED!")
+        else:
+            print("Model IS NOT TRAINED")
+        print()
+
+        for line in self.menu[0]:
+            print(line)
 
     def prompt(self):
+        """Awaits input from user, launces correct method based on response"""
         while True:
             self.print_state_menu()
             input_v = input("> ")
+            self.clearAllTheThings()
 
-            if input_v == "generate" or input_v == "1":
+            if not self.loaded_model and input_v == "generate" or input_v == "1":
                 self.nb.loadData()
+                self.loaded_model = True
 
-            elif input_v == "import" or input_v == "2":
+            elif not self.loaded_model and input_v == "import" or input_v == "2":
                 self.nb.load_data_from_file()
+                self.loaded_model = True
 
             elif input_v == "score" or input_v == "3":
                 self.nb.score()
                 input("Press enter to continue...")
 
             elif input_v == "classify" or input_v == "4":
-                review = input("Give review to classify:")
-                self.nb.classify(review)
+                self.nb.classify()
                 input("Press enter to continue...")
 
             elif input_v == "classifyfile" or input_v == "5":
+                if nb.is_not_loaded():
+                    nb.print_load_model()
+                    input("Press enter to continue...")
+                    continue
+
                 print("Select text file to classify")
                 tkinter.Tk().withdraw()
                 file_dir_path = filedialog.askopenfilename()
@@ -60,19 +72,30 @@ class MenuClass:
                 input("Press enter to continue...")
 
             elif input_v == "aboutus" or input_v == "6":
+                print("""\n
+                    Native Bais implemented by people
+                    HME005,TPE044,EOS005
+                    Hans, Thomas og Espen\n
+                    """)
                 input("Press enter to continue...")
 
             elif input_v == "save" or input_v == "7":
+                if nb.is_not_loaded():
+                    nb.print_load_model()
+                    input("Press enter to continue...")
+                    continue
                 self.nb.saveData()
 
             elif input_v == "exit" or input_v == "8":
                 sys.exit()
 
+            else:
+                print("Unknown keyword or command, please try again!")
+
             
 
 
 if __name__ == '__main__':
-    clearAllTheThings()
     nb = NaiveBayes()
     menu = MenuClass(nb)
     menu.prompt()
