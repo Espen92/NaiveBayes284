@@ -128,7 +128,7 @@ class NaiveBayes:
             if pos < neg:
                 gotItRight += 1
 
-        print(f"score {gotItRight/counter}")
+        print(f"score {gotItRight/counter:.2%}")
 
     def is_not_loaded(self):
         """Check to avoid nullpointers"""

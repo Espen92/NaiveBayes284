@@ -12,8 +12,9 @@ __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file
 class MenuClass:
     def __init__(self, nb):
         self.loaded_model = False
+        self.menu = []
         self.nb = nb
-        self.prompt()
+
 
 
         with open(os.path.join(__location__, "menus.json"), "r") as data:
