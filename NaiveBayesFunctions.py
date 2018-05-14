@@ -5,10 +5,6 @@ import numpy as np
 from collections import Counter
 from string import punctuation
 
-def get_percent(part, full):
-    return (part*100) // (full*100)
-
-
 def createArrayList(path):
     """
     Lager to lister med numpy arrays for alle ordene
@@ -87,13 +83,19 @@ def preProb(poswordsDict, poslisLen, negwordsDict, neglisLen, allWords):
     emptyNegProb = math.log(0.5)
     for i, word in enumerate(allWords):
         print(f"Calculating... {(i+1)/len(allWords):.0%}", end="\r")
-        x = (math.log(((negwordsDict[word]+1)/(allWLeng+neglisLen))), math.log(((poswordsDict[word]+1)/(allWLeng+poslisLen))),
-             math.log((1-((negwordsDict[word]+1)/(allWLeng+neglisLen)))),     math.log((1-((poswordsDict[word]+1)/(allWLeng+poslisLen)))))
+        x = (math.log((negwordsDict[word]+1)/(allWLeng+neglisLen)),
+             math.log((poswordsDict[word]+1)/(allWLeng+poslisLen)),
+             math.log(1-(negwordsDict[word]+1)/(allWLeng+neglisLen)),
+             math.log(1-(poswordsDict[word]+1)/(allWLeng+poslisLen))
+             )
         new_dict[word] = x
         emptyNegProb += x[2]
         emptyPosProb += x[3]
-    firstTimeValue = (math.log(1/(allWLeng+neglisLen)), math.log(1/(allWLeng+poslisLen)),
-                      math.log(1-(1/(allWLeng+neglisLen))), math.log(1-(1/(allWLeng+poslisLen))))
+    firstTimeValue = (math.log(1/(allWLeng+neglisLen)),
+                      math.log(1/(allWLeng+poslisLen)),
+                      math.log(1-1/(allWLeng+neglisLen)), 
+                      math.log(1-1/(allWLeng+poslisLen))
+                      )
 
     return new_dict, firstTimeValue, emptyPosProb, emptyNegProb
 
