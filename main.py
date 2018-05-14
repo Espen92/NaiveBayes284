@@ -27,10 +27,15 @@ class MenuClass:
     def print_state_menu(self):
         """Prints menu """
         self.clearAllTheThings()
-        if self.loaded_model:
+        if nb.train_loaded:
             print("Model IS TRAINED!")
         else:
             print("Model IS NOT TRAINED")
+
+        if nb.test_loaded:
+            print("TEST DATA LOADED")
+        else:
+            print("TEST DATA NOT LOADED")
         print()
 
         for line in self.menu[0]:
@@ -45,14 +50,15 @@ class MenuClass:
 
             if not self.loaded_model and input_v == "generate" or input_v == "1":
                 self.nb.loadData()
-                self.loaded_model = True
 
             elif not self.loaded_model and input_v == "import" or input_v == "2":
                 self.nb.load_data_from_file()
-                self.loaded_model = True
 
             elif input_v == "score" or input_v == "3":
-                self.nb.score()
+                if not nb.train_loaded:
+                    print("Training data not loaded")
+                else:
+                    self.nb.score()
                 input("Press enter to continue...")
 
             elif input_v == "classify" or input_v == "4":

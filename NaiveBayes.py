@@ -14,6 +14,9 @@ __location__ = os.path.realpath(os.path.join(
 
 class NaiveBayes:
     def __init__(self):
+        self.test_loaded = False
+        self.train_loaded = False
+
         self.posTestReviewsList = None
         self.negTestReviewsList = None
         self.probs = None
@@ -22,6 +25,8 @@ class NaiveBayes:
         self.emptyNeg = None
         self.testDirPath = None
         self.folderpath = None
+        self.pListLeng = None
+        self.nListLeng = None
 
 
     def set_review_list(self):
@@ -39,7 +44,6 @@ class NaiveBayes:
         """
 
         self.load_train_folder()
-        self.load_test_folder()
 
         if self.folderpath is None:
             print("A training folder was not selected!")
@@ -53,13 +57,12 @@ class NaiveBayes:
         allWords = Counter(negWordsDict) + Counter(posWordsDict)
         print("made the dicts")
 
-        self.set_review_list()
-        print("loading done, type 'help' for helpfull commands")
+        self.pListLeng = len(posList)
+        self.nListLeng = len(negList)
+        self.probs, self.zeroV, self.emptyPos, self.emptyNeg = nb.preProb(posWordsDict, self.pListLeng,
+                                                      negWordsDict, self.nListLeng, allWords)
 
-        pListLeng = len(posList)
-        nListLeng = len(negList)
-        self.probs, self.zeroV, self.emptyPos, self.emptyNeg = nb.preProb(posWordsDict, pListLeng,
-                                                      negWordsDict, nListLeng, allWords)
+        self.train_loaded = True
 
     def saveData(self):
         """Saves model for quicker loading later"""
@@ -77,8 +80,8 @@ class NaiveBayes:
 
     def load_data_from_file(self):
         """Loads a already generated model from loadData"""
-        self.load_test_folder()
-        self.set_review_list()
+        
+        
         with open(os.path.join(__location__, "preset_model.json"), "r") as data:
             j_data = json.load(data)
 
@@ -87,17 +90,20 @@ class NaiveBayes:
             self.emptyPos = j_data.get("emptyPos", None)
             self.emptyNeg = j_data.get("emptyNeg", None)
 
+        self.train_loaded = True
 
     def load_test_folder(self):
         """Loads folder with Test data"""
         print("choose your 'test' folder")
         tkinter.Tk().withdraw()
+        self.test_loaded = True
         self.testDirPath = filedialog.askdirectory()
 
     def load_train_folder(self):
         """Loads folder with training data"""
         print("choose your 'train' folder")
         tkinter.Tk().withdraw()
+        self.train_loaded = True
         self.folderpath = filedialog.askdirectory()
 
     def score(self):
@@ -106,29 +112,47 @@ class NaiveBayes:
         Then checks if the classification was right or not and updates the score 
         accordingly. Finally displays the score.
         """
-
+        print("Select test folder")
+        self.load_test_folder()
+        self.set_review_list()
         print("Scoring... This may take a minute")
         if self.is_not_loaded():
             self.print_load_model()
             return
 
-        gotItRight = 0
-        counter = 0
+        tp = 0
+        tn = 0
+        #All positive reviews
+        pos_c = len(self.posTestReviewsList)
+        #All negative reviews
+        neg_c = len(self.negTestReviewsList)
+        total = pos_c + neg_c
 
+        #Applies formula to each word in pos test directory, counts all positives (True positives)
         for rev in self.posTestReviewsList:
-            counter += 1
             neg, pos = nb.getProbs(rev, self.probs, self.zeroV, self.emptyPos, self.emptyNeg)
             if pos > neg:
-                gotItRight += 1
+                tp += 1
 
-
+        #Applies formula to each word in neg test directory, counts all negatives (True negatives)
         for rev in self.negTestReviewsList:
-            counter += 1
             neg, pos = nb.getProbs(rev, self.probs, self.zeroV, self.emptyPos, self.emptyNeg)
             if pos < neg:
-                gotItRight += 1
+                tn += 1
+        
 
-        print(f"score {gotItRight/counter:.2%}")
+        accuracy = (tp+tn)/total
+        print(f"Accuracy {accuracy:.2%}")
+
+        fp = pos_c - tp
+        precision = tp / (tp+fp)
+        print(f"Precision {precision:.2%}")
+
+        fn = neg_c - tn
+        recall = tp / (tp+fn)
+        print(f"Recall {recall:.2%}")
+
+
 
     def is_not_loaded(self):
         """Check to avoid nullpointers"""
