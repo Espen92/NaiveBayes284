@@ -2,7 +2,7 @@ from NaiveBayes import NaiveBayes
 import os
 import sys
 import json as json
-
+import menus
 import tkinter
 from tkinter import filedialog
 
@@ -12,13 +12,7 @@ __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file
 class MenuClass:
     def __init__(self, nb):
         self.loaded_model = False
-        self.menu = []
         self.nb = nb
-
-
-
-        with open(os.path.join(__location__, "menus.json"), "r") as data:
-            self.menu = json.load(data)
 
     def clearAllTheThings(self):
         """Clears command prompt in win & ios"""
@@ -27,19 +21,25 @@ class MenuClass:
     def print_state_menu(self):
         """Prints menu """
         self.clearAllTheThings()
+
         if nb.train_loaded:
-            print("Model IS TRAINED!")
+            print("TRAINING DATA LOADED")
         else:
-            print("Model IS NOT TRAINED")
+            print("TRAINING DATA NOT LOADED")
 
         if nb.test_loaded:
             print("TEST DATA LOADED")
         else:
             print("TEST DATA NOT LOADED")
-        print()
 
-        for line in self.menu[0]:
-            print(line)
+        if nb.train_loaded:
+            print(menus.start_menu_trained)
+        else:
+            print(menus.start_menu)
+
+
+
+        
 
     def prompt(self):
         """Awaits input from user, launces correct method based on response"""
@@ -54,18 +54,23 @@ class MenuClass:
             elif not self.loaded_model and input_v == "import" or input_v == "2":
                 self.nb.load_data_from_file()
 
-            elif input_v == "score" or input_v == "3":
+            elif input_v == "loadtest" or input_v == "3":
+                self.nb.load_test_folder()
+            
+            elif input_v == "score" or input_v == "4":
                 if not nb.train_loaded:
                     print("Training data not loaded")
+                elif not nb.test_loaded:
+                    print("Test data not loaded")
                 else:
                     self.nb.score()
                 input("Press enter to continue...")
 
-            elif input_v == "classify" or input_v == "4":
+            elif input_v == "classify" or input_v == "5":
                 self.nb.classify()
                 input("Press enter to continue...")
 
-            elif input_v == "classifyfile" or input_v == "5":
+            elif input_v == "classifyfile" or input_v == "6":
                 if nb.is_not_loaded():
                     nb.print_load_model()
                     input("Press enter to continue...")
@@ -78,7 +83,7 @@ class MenuClass:
                     self.nb.classify(data.read())
                 input("Press enter to continue...")
 
-            elif input_v == "aboutus" or input_v == "6":
+            elif input_v == "aboutus" or input_v == "7":
                 print("""\n
                     Native Bais implemented by people
                     HME005,TPE044,EOS005
@@ -86,14 +91,13 @@ class MenuClass:
                     """)
                 input("Press enter to continue...")
 
-            elif input_v == "save" or input_v == "7":
+            elif input_v == "save" or input_v == "8":
                 if nb.is_not_loaded():
                     nb.print_load_model()
                     input("Press enter to continue...")
-                    continue
                 self.nb.saveData()
 
-            elif input_v == "exit" or input_v == "8":
+            elif input_v == "exit" or input_v == "9":
                 sys.exit()
 
             else:
