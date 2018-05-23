@@ -66,8 +66,8 @@ class NaiveBayes:
 
     def saveData(self):
         """Saves model for quicker loading later"""
-        if self.is_not_loaded():
-            self.print_load_model()
+        if not self.train_loaded:
+            print("Training data not loaded")
             return
             
         values = {"probs": self.probs,
@@ -98,6 +98,7 @@ class NaiveBayes:
         tkinter.Tk().withdraw()
         self.test_loaded = True
         self.testDirPath = filedialog.askdirectory()
+        self.set_review_list()
 
     def load_train_folder(self):
         """Loads folder with training data"""
@@ -112,9 +113,13 @@ class NaiveBayes:
         Then checks if the classification was right or not and updates the score 
         accordingly. Finally displays the score.
         """
-        print("Select test folder")
-        self.load_test_folder()
-        self.set_review_list()
+        #print("Select test folder")
+        #self.load_test_folder()
+        if not self.test_loaded or not self.train_loaded:
+            print("Test or training data not loaded")
+            return
+            
+        #self.set_review_list()
         print("Scoring... This may take a minute")
         if self.is_not_loaded():
             self.print_load_model()
