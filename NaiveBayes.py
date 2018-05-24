@@ -1,15 +1,17 @@
 import os
 import json
-
+from pathlib import Path
 import tkinter
-import numpy as np
 from tkinter import filedialog
 from collections import Counter
 
+import numpy as np
+
 import NaiveBayesFunctions as nb
 
-__location__ = os.path.realpath(os.path.join(
-    os.getcwd(), os.path.dirname(__file__)))
+
+
+_location = Path(__file__).resolve().parent
 
 
 class NaiveBayes:
@@ -66,8 +68,8 @@ class NaiveBayes:
 
     def saveData(self):
         """Saves model for quicker loading later"""
-        if self.is_not_loaded():
-            self.print_load_model()
+        if not self.train_loaded:
+            print("Training data not loaded")
             return
             
         values = {"probs": self.probs,
@@ -75,14 +77,14 @@ class NaiveBayes:
                   "emptyPos": self.emptyPos,
                   "emptyNeg": self.emptyNeg}
 
-        with open(os.path.join(__location__, "preset_model.json"), "w") as outfile:
+        with Path(_location.joinpath("preset_model.json")).open() as outfile:
             json.dump(values, outfile)
 
     def load_data_from_file(self):
         """Loads a already generated model from loadData"""
         
         
-        with open(os.path.join(__location__, "preset_model.json"), "r") as data:
+        with Path(_location.joinpath("preset_model.json")).open() as data:
             j_data = json.load(data)
 
             self.probs = j_data.get("probs", None)
@@ -98,6 +100,7 @@ class NaiveBayes:
         tkinter.Tk().withdraw()
         self.test_loaded = True
         self.testDirPath = filedialog.askdirectory()
+        self.set_review_list()
 
     def load_train_folder(self):
         """Loads folder with training data"""
@@ -112,9 +115,13 @@ class NaiveBayes:
         Then checks if the classification was right or not and updates the score 
         accordingly. Finally displays the score.
         """
-        print("Select test folder")
-        self.load_test_folder()
-        self.set_review_list()
+        #print("Select test folder")
+        #self.load_test_folder()
+        if not self.test_loaded or not self.train_loaded:
+            print("Test or training data not loaded")
+            return
+            
+        #self.set_review_list()
         print("Scoring... This may take a minute")
         if self.is_not_loaded():
             self.print_load_model()
