@@ -1,15 +1,18 @@
 import os
 import json
-
+from pathlib import Path
 import tkinter
-import numpy as np
 from tkinter import filedialog
+from string import punctuation
 from collections import Counter
+
+import numpy as np
 
 import NaiveBayesFunctions as nb
 
-__location__ = os.path.realpath(os.path.join(
-    os.getcwd(), os.path.dirname(__file__)))
+
+
+_location = Path(__file__).resolve().parent
 
 
 class NaiveBayes:
@@ -74,13 +77,15 @@ class NaiveBayes:
                   "emptyPos": self.emptyPos,
                   "emptyNeg": self.emptyNeg}
 
-        with open(os.path.join(__location__, "preset_model.json"), "w") as outfile:
+        with Path(_location.joinpath("preset_model.json")).open() as outfile:
             json.dump(values, outfile)
 
     def load_data_from_file(self):
         """Loads a already generated model from loadData"""
+        
+        
+        with Path(_location.joinpath("preset_model.json")).open() as data:
 
-        with open(os.path.join(__location__, "preset_model.json"), "r") as data:
             j_data = json.load(data)
 
             self.probs = j_data.get("probs", None)
@@ -161,6 +166,7 @@ class NaiveBayes:
         return (self.probs is None or self.zeroV is None
                 or self.emptyPos is None or self.emptyNeg is None)
 
+
     def print_load_model(self):
         """Message sent if model is not generated or imported before use0"""
 
@@ -181,9 +187,13 @@ class NaiveBayes:
             return
         if review is None:
             review = input("Give review to classify:")
-        review_list = np.array(review.split())
-        neg, pos = nb.getProbs(review_list, self.probs,
-                               self.zeroV, self.emptyPos, self.emptyNeg)
+
+        table = str.maketrans('', '', punctuation)
+        review = review.lower()
+        cleanText = review.translate(table)
+        review_list = np.array(cleanText.split())
+        neg, pos = nb.getProbs(review_list, self.probs, self.zeroV, self.emptyPos, self.emptyNeg)
+
         if neg > pos:
             print("Your review is negative")
         else:
