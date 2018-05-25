@@ -21,6 +21,7 @@ def createArrayList(path):
     neg = os.listdir(path+"\\neg\\")
     pos = os.listdir(path+"\\pos\\")
     table = str.maketrans('', '', punctuation)
+    
     print(f"Loading: {path}")
     print(
         f"This set contains {len(neg)+len(pos)} files\nNow loading the set please wait...")

@@ -7,8 +7,6 @@ import tkinter
 from tkinter import filedialog
 
 
-__location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
-
 class MenuClass:
     def __init__(self, nb):
         self.loaded_model = False
@@ -71,11 +69,6 @@ class MenuClass:
                 input("Press enter to continue...")
 
             elif input_v == "classifyfile" or input_v == "6":
-                if nb.is_not_loaded():
-                    nb.print_load_model()
-                    input("Press enter to continue...")
-                    continue
-
                 print("Select text file to classify")
                 tkinter.Tk().withdraw()
                 file_dir_path = filedialog.askopenfilename()

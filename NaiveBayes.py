@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 import tkinter
 from tkinter import filedialog
+from string import punctuation
 from collections import Counter
 
 import numpy as np
@@ -165,7 +166,7 @@ class NaiveBayes:
         """Check to avoid nullpointers"""
         return (self.probs is None or self.zeroV is None
                 or self.emptyPos is None or self.emptyNeg is None
-                or self.testDirPath is None)
+                )
 
     def print_load_model(self):
         """Message sent if model is not generated or imported before use0"""
@@ -187,7 +188,11 @@ class NaiveBayes:
             return
         if review is None:
             review = input("Give review to classify:")
-        review_list = np.array(review.split())
+
+        table = str.maketrans('', '', punctuation)
+        review = review.lower()
+        cleanText = review.translate(table)
+        review_list = np.array(cleanText.split())
         neg, pos = nb.getProbs(review_list, self.probs, self.zeroV, self.emptyPos, self.emptyNeg)
         if neg > pos:
             print("Your review is negative")
