@@ -1,9 +1,20 @@
+from __future__ import division
 import os
 import math
-
+import sys
+import multiprocessing
 import numpy as np
 from collections import Counter
 from string import punctuation
+
+
+def load_file(kwargs):
+    file_path, table = kwargs
+    with open(file_path, encoding='utf-8') as f:
+        text = f.read().lower()
+        cleanText = text.translate(table)
+        wordsarray = np.array(cleanText.split())
+        return wordsarray
 
 def createArrayList(path):
     """
@@ -25,22 +36,20 @@ def createArrayList(path):
     print(f"Loading: {path}")
     print(
         f"This set contains {len(neg)+len(pos)} files\nNow loading the set please wait...")
-    for i, file_ in enumerate(neg):
-        print(f"Loaded file {(i+1)/len(neg):.0%} from negative...", end="\r")
-        with open(path+"\\neg\\"+file_, encoding='utf-8') as f:
-            text = f.read().lower()
-            cleanText = text.translate(table)
-            wordsarray = np.array(cleanText.split())
-            neg_list.append(wordsarray)
 
-    for i, file_ in enumerate(pos):
-        print(
-            f"Loaded file {(i+1)/len(pos):.0%} from positive...", end="\r")
-        with open(path+"\\pos\\"+file_, encoding='utf-8') as fi:
-            text = fi.read().lower()
-            cleanText = text.translate(table)
-            wordsarray = np.array(cleanText.split())
-            pos_list.append(wordsarray)
+    
+    p = multiprocessing.Pool()
+    params = ((f"{path}\\neg\\{neg_file_path}", table) for neg_file_path in neg)
+    for i, neg_word_array in enumerate(p.imap_unordered(load_file, params), 1):
+        neg_list.append(neg_word_array)
+        print(f"Loaded file {(i)/len(neg):.0%} from negative...", end="\r")
+
+    params = ((f"{path}\\pos\\{pos_file_path}", table) for pos_file_path in pos)
+    for i, pos_word_array in enumerate(p.imap_unordered(load_file, params), 1):
+        pos_list.append(pos_word_array)
+        print(f"Loaded file {(i)/len(pos):.0%} from positive...", end="\r")
+
+
     print()
     print("Loading done")
     return pos_list, neg_list
@@ -87,16 +96,16 @@ def preProb(poswordsDict, poslisLen, negwordsDict, neglisLen, allWords):
         x = (math.log((negwordsDict[word]+1)/(allWLeng+neglisLen)),
              math.log((poswordsDict[word]+1)/(allWLeng+poslisLen)),
              math.log(1-(negwordsDict[word]+1)/(allWLeng+neglisLen)),
-             math.log(1-(poswordsDict[word]+1)/(allWLeng+poslisLen))
-             )
+             math.log(1-(poswordsDict[word]+1)/(allWLeng+poslisLen)))
+             
         new_dict[word] = x
         emptyNegProb += x[2]
         emptyPosProb += x[3]
+
     firstTimeValue = (math.log(1/(allWLeng+neglisLen)),
                       math.log(1/(allWLeng+poslisLen)),
                       math.log(1-1/(allWLeng+neglisLen)), 
-                      math.log(1-1/(allWLeng+poslisLen))
-                      )
+                      math.log(1-1/(allWLeng+poslisLen)))
 
     return new_dict, firstTimeValue, emptyPosProb, emptyNegProb
 

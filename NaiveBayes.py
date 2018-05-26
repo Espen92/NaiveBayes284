@@ -150,16 +150,22 @@ class NaiveBayes:
             if pos < neg:
                 tn += 1
 
+        fp = pos_c - tp
+        fn = neg_c - tn
         accuracy = (tp+tn)/total
         print(f"Accuracy {accuracy:.2%}")
 
-        fp = pos_c - tp
         precision = tp / (tp+fp)
         print(f"Precision {precision:.2%}")
 
-        fn = neg_c - tn
         recall = tp / (tp+fn)
         print(f"Recall {recall:.2%}")
+
+        print(f"""
+        \rTrue Positives : {tp}
+        \rTrue Negatives : {tn}
+        \rFalse Positives: {fp}
+        \rFalse Negatives: {fn}""")
 
     def is_not_loaded(self):
         """Check to avoid nullpointers"""
