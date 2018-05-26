@@ -4,6 +4,7 @@ Menu
 Select option:
 1. Generate model
 2. Import already generated model
+3. Load test data
 7. About us
 9. Exit
 """

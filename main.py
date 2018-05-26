@@ -7,8 +7,6 @@ import tkinter
 from tkinter import filedialog
 
 
-__location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
-
 class MenuClass:
     def __init__(self, nb):
         self.loaded_model = False
@@ -70,11 +68,6 @@ class MenuClass:
                 input("Press enter to continue...")
 
             elif input_v == "classifyfile" or input_v == "6":
-                if nb.is_not_loaded():
-                    nb.print_load_model()
-                    input("Press enter to continue...")
-                    continue
-
                 print("Select text file to classify")
                 tkinter.Tk().withdraw()
                 file_dir_path = filedialog.askopenfilename()
@@ -83,10 +76,9 @@ class MenuClass:
                 input("Press enter to continue...")
 
             elif input_v == "aboutus" or input_v == "7":
-                print("""\n
+                print("""
                     Native Bais implemented by people
-                    HME005,TPE044,EOS005
-                    Hans, Thomas og Espen\n
+                    Candidates : 42, 31, 20.
                     """)
                 input("Press enter to continue...")
 

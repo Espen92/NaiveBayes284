@@ -1,15 +1,18 @@
 import os
 import json
-
+from pathlib import Path
 import tkinter
-import numpy as np
 from tkinter import filedialog
+from string import punctuation
 from collections import Counter
+
+import numpy as np
 
 import NaiveBayesFunctions as nb
 
-__location__ = os.path.realpath(os.path.join(
-    os.getcwd(), os.path.dirname(__file__)))
+
+
+_location = Path(__file__).resolve().parent
 
 
 class NaiveBayes:
@@ -28,11 +31,10 @@ class NaiveBayes:
         self.pListLeng = None
         self.nListLeng = None
 
-
     def set_review_list(self):
         if self.posTestReviewsList is not None and self.negTestReviewsList is not None:
             return
-        
+
         self.posTestReviewsList, self.negTestReviewsList = nb.createArrayList(
             self.testDirPath)
 
@@ -60,7 +62,7 @@ class NaiveBayes:
         self.pListLeng = len(posList)
         self.nListLeng = len(negList)
         self.probs, self.zeroV, self.emptyPos, self.emptyNeg = nb.preProb(posWordsDict, self.pListLeng,
-                                                      negWordsDict, self.nListLeng, allWords)
+                                                                          negWordsDict, self.nListLeng, allWords)
 
         self.train_loaded = True
 
@@ -69,20 +71,21 @@ class NaiveBayes:
         if not self.train_loaded:
             print("Training data not loaded")
             return
-            
+
         values = {"probs": self.probs,
                   "zeroV": self.zeroV,
                   "emptyPos": self.emptyPos,
                   "emptyNeg": self.emptyNeg}
 
-        with open(os.path.join(__location__, "preset_model.json"), "w") as outfile:
+        with Path(_location.joinpath("preset_model.json")).open() as outfile:
             json.dump(values, outfile)
 
     def load_data_from_file(self):
         """Loads a already generated model from loadData"""
         
         
-        with open(os.path.join(__location__, "preset_model.json"), "r") as data:
+        with Path(_location.joinpath("preset_model.json")).open() as data:
+
             j_data = json.load(data)
 
             self.probs = j_data.get("probs", None)
@@ -114,12 +117,12 @@ class NaiveBayes:
         accordingly. Finally displays the score.
         """
         #print("Select test folder")
-        #self.load_test_folder()
+        # self.load_test_folder()
         if not self.test_loaded or not self.train_loaded:
             print("Test or training data not loaded")
             return
-            
-        #self.set_review_list()
+
+        # self.set_review_list()
         print("Scoring... This may take a minute")
         if self.is_not_loaded():
             self.print_load_model()
@@ -127,24 +130,25 @@ class NaiveBayes:
 
         tp = 0
         tn = 0
-        #All positive reviews
+        # All positive reviews
         pos_c = len(self.posTestReviewsList)
-        #All negative reviews
+        # All negative reviews
         neg_c = len(self.negTestReviewsList)
         total = pos_c + neg_c
 
-        #Applies formula to each word in pos test directory, counts all positives (True positives)
+        # Applies formula to each word in pos test directory, counts all positives (True positives)
         for rev in self.posTestReviewsList:
-            neg, pos = nb.getProbs(rev, self.probs, self.zeroV, self.emptyPos, self.emptyNeg)
+            neg, pos = nb.getProbs(
+                rev, self.probs, self.zeroV, self.emptyPos, self.emptyNeg)
             if pos > neg:
                 tp += 1
 
-        #Applies formula to each word in neg test directory, counts all negatives (True negatives)
+        # Applies formula to each word in neg test directory, counts all negatives (True negatives)
         for rev in self.negTestReviewsList:
-            neg, pos = nb.getProbs(rev, self.probs, self.zeroV, self.emptyPos, self.emptyNeg)
+            neg, pos = nb.getProbs(
+                rev, self.probs, self.zeroV, self.emptyPos, self.emptyNeg)
             if pos < neg:
                 tn += 1
-        
 
         accuracy = (tp+tn)/total
         print(f"Accuracy {accuracy:.2%}")
@@ -157,17 +161,15 @@ class NaiveBayes:
         recall = tp / (tp+fn)
         print(f"Recall {recall:.2%}")
 
-
-
     def is_not_loaded(self):
         """Check to avoid nullpointers"""
         return (self.probs is None or self.zeroV is None
-                or self.emptyPos is None or self.emptyNeg is None
-                or self.testDirPath is None)
+                or self.emptyPos is None or self.emptyNeg is None)
+
 
     def print_load_model(self):
         """Message sent if model is not generated or imported before use0"""
-        
+
         os.system('cls' if os.name == 'nt' else 'clear')
         print("============================================================")
         print("|Generate or import model before running any other command!|")
@@ -185,8 +187,13 @@ class NaiveBayes:
             return
         if review is None:
             review = input("Give review to classify:")
-        review_list = np.array(review.split())
+
+        table = str.maketrans('', '', punctuation)
+        review = review.lower()
+        cleanText = review.translate(table)
+        review_list = np.array(cleanText.split())
         neg, pos = nb.getProbs(review_list, self.probs, self.zeroV, self.emptyPos, self.emptyNeg)
+
         if neg > pos:
             print("Your review is negative")
         else:
