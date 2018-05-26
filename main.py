@@ -38,7 +38,6 @@ class MenuClass:
             print(menus.start_menu)
 
 
-
         
 
     def prompt(self):
